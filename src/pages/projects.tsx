@@ -34,7 +34,7 @@ const Projects: React.FC<ProjectsProps> = ({ repos }) => {
       >
         <motion.a href="/" variants={menuItemVariants}>Home</motion.a>
         <motion.a href="#" variants={menuItemVariants}>Projects</motion.a>
-        <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a>
+        {/* <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a> */}
       </Menu>
       <Title>Projects</Title>
       <ProjectList>

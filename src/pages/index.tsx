@@ -43,8 +43,8 @@ const Home: React.FC<HomePageProps> = ({ activitySummary }) => {
         variants={menuVariants}
       >
         <motion.a href="#" variants={menuItemVariants}>Home</motion.a>
-        <motion.a href="/projects" variants={menuItemVariants}>Projects</motion.a>
-        <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a>
+        <motion.a href="/projects.html" variants={menuItemVariants}>Projects</motion.a>
+        {/* <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a> */}
       </Menu>
       <Description>
         <div>
