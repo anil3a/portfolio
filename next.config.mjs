@@ -6,8 +6,9 @@ const nextConfig = {
 			{ protocol: 'https', hostname: '**.githubusercontent.com' },
 			{ protocol: 'https', hostname: '**.github.com' }
 		],
+		unoptimized: true,
 	},
-	// output: 'export'
+	output: 'export',
 };
 
 export default nextConfig;
