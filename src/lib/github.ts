@@ -164,8 +164,10 @@ export const getRecentUserActivity = async (username: string): Promise<string> =
       }
     }
 
-    acc[activity.type] = acc[activity.type] || 0;
-    acc[activity.type]++;
+    if (!acc[activity.type]) {
+      acc[activity.type] = 0; // Initialize to 0 if undefined
+    }
+    acc[activity.type] = (acc[activity.type] || 0) + 1; // Increment the count safely
 
     return acc;
   }, {});
