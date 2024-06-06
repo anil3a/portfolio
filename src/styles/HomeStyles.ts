@@ -43,6 +43,7 @@ export const NameTitle = styled(motion.div)`
   }
   h1 {
     margin: 0.6em 0 0.1em 0;
+    font-size: 2em;
 
     img {
       height: 40px;
@@ -58,6 +59,14 @@ export const NameTitle = styled(motion.div)`
 
   @media (max-width: 600px) {
     font-size: 1.5rem;
+    margin-bottom: 0.3rem;
+
+    h1 {
+      font-size: 1.5em;
+    }
+    h2 {
+      font-size: 0.9em;
+    }
   }
 `;
 
@@ -110,30 +119,58 @@ export const Menu = styled(motion.nav)`
     }
   }
 
-  @media (max-width: 600px) {
-    flex-direction: column;
-    gap: 1rem;
+  @media (max-width: 768px) {
+    gap: 1.4rem;
     font-size: 1.2rem;
   }
+
+  @media (max-width: 410px) {
+    gap: 1rem;
+  }
+
 `;
 
 export const Description = styled.div`
-  margin: 4% 5%;
   font-family: ui-sans-serif,system-ui,sans-serif;
+  margin: 4% 5% 1% 5%;
   max-width: 1400px;
-
   line-height: 23px;
 
   ul {
     list-style-type: none;
+    padding-left: 0;
+    margin-top: 40px;
 
     li {
       margin-bottom: 0.4em;
     }
   }
+
   a {
     color: #04c942;
     transform: scale(1.1);
+  }
+
+  @media (max-width: 768px) {
+    ul {
+      margin-top: 20px;
+    }
+  }
+
+  @media (max-width: 600px) {
+    margin: 1% 3% 1% 3%;
+    ul {
+      margin-top: 4px;
+    }
+  }
+  @media (max-width: 400px) {
+    margin: 0.2% 3% 0.1% 3%;
+    ul {
+      margin-top: 4px;
+    }
+    div p {
+      margin: 0.2em 0;
+    }
   }
 `;
 
@@ -168,6 +205,11 @@ export const NeonIcon = styled.span`
         color: #b7bbf3;
     }
   }
+`;
+
+export const RecentActivity = styled.div`
+  font-family: ui-sans-serif,system-ui,sans-serif;
+  color: #b3cdb8;
 `;
 
 export const variants = {

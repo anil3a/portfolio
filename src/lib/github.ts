@@ -13,7 +13,68 @@ type Repository = {
   language: string;
 };
 
-export const getAllRepos = async (username: string, numPages=3) => {
+interface Activity {
+  id: string;
+  type: string;
+  actor: {
+    id: number;
+    login: string;
+    display_login: string;
+    gravatar_id: string;
+    url: string;
+    avatar_url: string;
+  };
+  repo: {
+    id: number;
+    name: string;
+    url: string;
+  };
+  payload: {
+    repository_id: number;
+    push_id: number;
+    size: number;
+    distinct_size: number;
+    ref: string;
+    head: string;
+    before: string;
+    action: string;
+    ref_type: string;
+    pull_request: {
+      merged: number;
+    }
+    commits: {
+      sha: string;
+      author: {
+        email: string;
+        name: string;
+      };
+      message: string;
+      distinct: boolean;
+      url: string;
+    }[];
+  };
+  public: boolean;
+  created_at: string;
+}
+
+interface ActivitySummary {
+  commits?: number;
+  reviews?: number;
+  commentsCreated?: number;
+  commentsEdited?: number;
+  prsOpened?: number;
+  prsMerged?: number;
+  branches?: number;
+  tags?: number;
+  PushEvent?: number;
+  PullRequestReviewEvent?: number;
+  IssueCommentEvent?: number;
+  PullRequestEvent?: number;
+  CreateEvent?: number;
+  [key: string]: number | undefined;
+}
+
+export const getAllRepos = async (username: string, numPages=3, limit=20) => {
 
   const pages = Array.from({ length: numPages }, (_, i) => i + 1);
 	const fetchPromises = pages.map(page =>
@@ -23,7 +84,7 @@ export const getAllRepos = async (username: string, numPages=3) => {
 	);
 	const responses = await Promise.all(fetchPromises);
 	const resjson = await Promise.all(responses.map(res => res.json()));
-	let repos = resjson.flat(); // Combine the repos from all pages into a single 
+	const repos = resjson.flat(); // Combine the repos from all pages into a single 
 
   const hiddenRepos = process.env.HIDDEN_REPOS ? process.env.HIDDEN_REPOS.split(',') : [];
   const exposingRepos = process.env.PROJECT_WHITELISTS ? process.env.PROJECT_WHITELISTS.split(',') : [];
@@ -67,5 +128,71 @@ export const getAllRepos = async (username: string, numPages=3) => {
         }
       );
 
-  return sorted;
+  return sorted.slice(0, limit);
+};
+
+export const getRecentUserActivity = async (username: string): Promise<string> => {
+  const res = await fetch(`https://api.github.com/users/${username}/events`, {
+    headers: { Authorization: `Bearer ${process.env.GH_TOKEN}` },
+  });
+  const response: Activity[] = await res.json();
+
+  const activitySummary = response.reduce((acc: ActivitySummary, activity: Activity) => {
+    if (activity.type === 'PushEvent') {
+      acc.commits = acc.commits || 0;
+      acc.commits += activity.payload.size;
+    } else if (activity.type === 'PullRequestReviewEvent') {
+      acc.reviews = acc.reviews || 0;
+      acc.reviews++;
+    } else if (activity.type === 'IssueCommentEvent') {
+      acc.commentsCreated = acc.commentsCreated || 0;
+      acc.commentsCreated += activity.payload.action === 'created' ? 1 : 0;
+      acc.commentsEdited = acc.commentsEdited || 0;
+      acc.commentsEdited += activity.payload.action === 'edited' ? 1 : 0;
+    } else if (activity.type === 'PullRequestEvent') {
+      acc.prsOpened = acc.prsOpened || 0;
+      acc.prsOpened += activity.payload.action === 'opened' ? 1 : 0;
+      acc.prsMerged = acc.prsMerged || 0;
+      acc.prsMerged += activity.payload.action === 'closed' && activity.payload.pull_request.merged ? 1 : 0;
+    } else if (activity.type === 'CreateEvent') {
+      if (activity.payload.ref_type === 'tag') {
+        acc.tags = acc.tags || 0;
+        acc.tags++;
+      } else {
+        acc.branches = acc.branches || 0;
+        acc.branches++;
+      }
+    }
+
+    acc[activity.type] = acc[activity.type] || 0;
+    acc[activity.type]++;
+
+    return acc;
+  }, {});
+
+  const activitySummaryString = Object.keys(activitySummary)
+    .map((key) => {
+      const value = activitySummary[key];
+      if (key === 'commits' && value) {
+        return `pushed ${value} commit${value === 1 ? '' : 's'}`;
+      } else if (key === 'reviews' && value) {
+        return `reviewed ${value} PR${value === 1 ? '' : 's'}`;
+      } else if (key === 'prsOpened' && value) {
+        return `opened ${value} PR${value === 1 ? '' : 's'}`;
+      } else if (key === 'prsMerged' && value) {
+        return `merged ${value} PR${value === 1 ? '' : 's'}`;
+      } else if (key === 'commentsCreated' && value) {
+        return `made ${value} comment${value === 1 ? '' : 's'}`;
+      } else if (key === 'branches' && value) {
+        return `created ${value} branch${value === 1 ? '' : 'es'}`;
+      } else if (key === 'tags' && value) {
+        return `created ${value} tag${value === 1 ? '' : 's'}`;
+      } else {
+        return null;
+      }
+    })
+    .filter(Boolean)
+    .join(', ');
+
+  return activitySummaryString;
 };

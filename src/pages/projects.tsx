@@ -1,11 +1,17 @@
 import { GetStaticProps } from 'next';
 import { getAllRepos } from '../lib/github';
+import { motion } from 'framer-motion';
 import {
   Container,
   Title,
   ProjectList,
   ProjectCard
 } from '../styles/ProjectStyles';
+import {
+  Menu,
+  menuVariants,
+  menuItemVariants
+} from '../styles/HomeStyles';
 
 interface Repo {
   id: number;
@@ -21,6 +27,15 @@ interface ProjectsProps {
 const Projects: React.FC<ProjectsProps> = ({ repos }) => {
   return (
     <Container>
+      <Menu
+        initial="visible"
+        animate="visible"
+        variants={menuVariants}
+      >
+        <motion.a href="/" variants={menuItemVariants}>Home</motion.a>
+        <motion.a href="#" variants={menuItemVariants}>Projects</motion.a>
+        <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a>
+      </Menu>
       <Title>Projects</Title>
       <ProjectList>
         {repos.map((repo) => (

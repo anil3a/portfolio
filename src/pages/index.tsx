@@ -1,3 +1,5 @@
+import React from 'react';
+import { GetStaticProps } from 'next';
 import {
   Container,
   AbstractBackground,
@@ -8,11 +10,17 @@ import {
   menuItemVariants,
   Description,
   NeonIcon,
-  Neon
+  Neon,
+  RecentActivity
 } from '../styles/HomeStyles';
 import { motion } from 'framer-motion';
+import { getRecentUserActivity } from '../lib/github';
 
-const Home = () => {
+interface HomePageProps {
+  activitySummary: string;
+}
+
+const Home: React.FC<HomePageProps> = ({ activitySummary }) => {
   return (
     <Container>
       <AbstractBackground />
@@ -35,7 +43,7 @@ const Home = () => {
         variants={menuVariants}
       >
         <motion.a href="#" variants={menuItemVariants}>Home</motion.a>
-        <motion.a href="#projects" variants={menuItemVariants}>Projects</motion.a>
+        <motion.a href="/projects" variants={menuItemVariants}>Projects</motion.a>
         <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a>
       </Menu>
       <Description>
@@ -44,7 +52,6 @@ const Home = () => {
             My work spans across various technologies and domains, always aiming to create efficient, scalable, and maintainable software. 
             I enjoy tackling complex problems, learning new skills, and collaborating with others to turn ideas into reality.
           </p>
-          <br />
           <ul>
             <li><NeonIcon>🌱</NeonIcon> I’m currently programming in various programming languages: Python, PHP and JavaScript.</li>
             <li><NeonIcon>🔭</NeonIcon> I’m currently working on open-source projects and personal initiatives.</li>
@@ -57,8 +64,20 @@ const Home = () => {
           </ul>
         </div>
       </Description>
+      <RecentActivity>
+        {activitySummary && `In the last 90 days on GitHub, I ${activitySummary} in public repositories.`}
+      </RecentActivity>
     </Container>
   );
+};
+
+export const getStaticProps: GetStaticProps = async () => {
+  const activitySummary = await getRecentUserActivity(`${process.env.GH_USERNAME}`);
+  return {
+    props: {
+      activitySummary,
+    },
+  };
 };
 
 export default Home;
