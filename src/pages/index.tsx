@@ -1,4 +1,5 @@
 import React from 'react';
+import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import {
   Container,
@@ -7,13 +8,11 @@ import {
   Menu,
   variants,
   menuVariants,
-  menuItemVariants,
   Description,
   NeonIcon,
   Neon,
   RecentActivity
 } from '../styles/HomeStyles';
-import { motion } from 'framer-motion';
 import { getRecentUserActivity } from '../lib/github';
 
 interface HomePageProps {
@@ -42,9 +41,8 @@ const Home: React.FC<HomePageProps> = ({ activitySummary }) => {
         animate="visible"
         variants={menuVariants}
       >
-        <motion.a href="#" variants={menuItemVariants}>Home</motion.a>
-        <motion.a href="/projects.html" variants={menuItemVariants}>Projects</motion.a>
-        {/* <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a> */}
+        <Link href="/">Home</Link>
+        <Link href="/projects">Projects</Link>
       </Menu>
       <Description>
         <div>

@@ -1,6 +1,6 @@
+import Link from 'next/link';
 import { GetStaticProps } from 'next';
 import { getAllRepos } from '../lib/github';
-import { motion } from 'framer-motion';
 import {
   Container,
   Title,
@@ -9,8 +9,7 @@ import {
 } from '../styles/ProjectStyles';
 import {
   Menu,
-  menuVariants,
-  menuItemVariants
+  menuVariants
 } from '../styles/HomeStyles';
 
 interface Repo {
@@ -25,6 +24,7 @@ interface ProjectsProps {
 }
 
 const Projects: React.FC<ProjectsProps> = ({ repos }) => {
+  
   return (
     <Container>
       <Menu
@@ -32,8 +32,8 @@ const Projects: React.FC<ProjectsProps> = ({ repos }) => {
         animate="visible"
         variants={menuVariants}
       >
-        <motion.a href="/" variants={menuItemVariants}>Home</motion.a>
-        <motion.a href="#" variants={menuItemVariants}>Projects</motion.a>
+        <Link href="/">Home</Link>
+        <Link href="/projects">Projects</Link>
         {/* <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a> */}
       </Menu>
       <Title>Projects</Title>
