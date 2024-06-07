@@ -1,16 +1,17 @@
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { GetStaticProps } from 'next';
-import { getAllRepos } from '../lib/github';
 import {
   Container,
   Title,
   ProjectList,
-  ProjectCard
+  ProjectCard,
+  Loader
 } from '../styles/ProjectStyles';
 import {
   Menu,
   menuVariants
 } from '../styles/HomeStyles';
+import { getAllRepos_v2, api_repo, Repository } from '../lib/client_github';
 
 interface Repo {
   id: number;
@@ -19,26 +20,32 @@ interface Repo {
   description: string;
 }
 
-interface ProjectsProps {
-  repos: Repo[];
-}
+const Projects: React.FC = () => {
+  const [load, setLoading] = useState(false);
 
-const Projects: React.FC<ProjectsProps> = ({ repos }) => {
-  
+  useEffect(() => {
+    async function fetchRepos() {
+      const res = await getAllRepos_v2();
+      if(res){
+        setLoading(true)
+      }
+    }
+    fetchRepos();
+  }, [api_repo]);
+
   return (
     <Container>
       <Menu
-        initial="visible"
-        animate="visible"
-        variants={menuVariants}
       >
         <Link href="/">Home</Link>
         <Link href="/projects">Projects</Link>
-        {/* <motion.a href="#contact" variants={menuItemVariants}>Contact</motion.a> */}
       </Menu>
-      <Title>Projects</Title>
+      <Title>Projects {load}</Title>
       <ProjectList>
-        {repos.map((repo) => (
+        {api_repo.length < 1 && 
+          <Loader><br />loading...<br /></Loader>
+        }
+        {api_repo.map((repo) => (
           <ProjectCard key={repo.id}>
              <h3>{repo.name}</h3>
               <p>{repo.description}</p>
@@ -48,15 +55,6 @@ const Projects: React.FC<ProjectsProps> = ({ repos }) => {
       </ProjectList>
     </Container>
   );
-};
-
-export const getStaticProps: GetStaticProps = async () => {
-  const repos = await getAllRepos(`${process.env.GH_USERNAME}`);
-  return {
-    props: {
-      repos,
-    },
-  };
 };
 
 export default Projects;

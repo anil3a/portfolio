@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { GetStaticProps } from 'next';
 import {
   Container,
   AbstractBackground,
@@ -13,13 +12,22 @@ import {
   Neon,
   RecentActivity
 } from '../styles/HomeStyles';
-import { getRecentUserActivity } from '../lib/github';
+import { fetchActivity } from '../lib/client_github';
 
-interface HomePageProps {
-  activitySummary: string;
-}
 
-const Home: React.FC<HomePageProps> = ({ activitySummary }) => {
+const Home: React.FC = () => {
+
+  const [activitySummary, setActivitySummary] = useState<string>('');
+
+  useEffect(() => {
+    const getActivity = async () => {
+      const activity = await fetchActivity();
+      setActivitySummary(activity);
+    };
+
+    getActivity();
+  }, []);
+
   return (
     <Container>
       <AbstractBackground />
@@ -67,15 +75,6 @@ const Home: React.FC<HomePageProps> = ({ activitySummary }) => {
       </RecentActivity>
     </Container>
   );
-};
-
-export const getStaticProps: GetStaticProps = async () => {
-  const activitySummary = await getRecentUserActivity(`${process.env.GH_USERNAME}`);
-  return {
-    props: {
-      activitySummary,
-    },
-  };
 };
 
 export default Home;

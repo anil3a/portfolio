@@ -29,3 +29,8 @@ export const ProjectCard = styled.div`
     transform: translateY(-5px);
   }
 `;
+
+export const Loader = styled.div`
+  text-align: center;
+  margin: 0 auto;
+`;
