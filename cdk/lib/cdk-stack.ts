@@ -33,7 +33,13 @@ export class NextjsCdkStack extends cdk.Stack {
     const distribution = new cloudfront.Distribution(this, 'NextjsDistribution', {
       defaultBehavior: { origin: new origins.S3Origin(bucket) },
       domainNames: [config.subdomainName],
-      certificate: certificate
+      certificate: certificate,
+      errorResponses: [{
+        httpStatus: 404,
+        responseHttpStatus: 200,
+        responsePagePath: '/index.html',
+        ttl: cdk.Duration.seconds(0),
+      }],
     });
 
     // Route 53 Hosted Zone
